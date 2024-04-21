@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Geospatial Contour Example 02</title>
 
-      <script src="https://d3js.org/d3.v6.min.js"></script>
+      <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
@@ -75,7 +75,7 @@
 
     // min max temperature read during 2018
     const min_temp =0;
-    const max_temp = 2000;
+    const max_temp = 3000;
 
     // path generator
 
@@ -103,7 +103,7 @@
                 range: true,
                 min: d3.min(values_density),
                 max: d3.max(values_density),
-                values: [100, 900 ],
+                values: [200, 900 ],
                 slide: function( event, ui ) {
                     $( "#mySlider" ).val( "From " + ui.values[ 0 ] + " - To " + ui.values[ 1 ] );
                     console.log( ui.values[ 0 ], ui.values[ 1 ])
@@ -118,7 +118,7 @@
                 /////////////////COLOR CODING/////////////////////////////
                 let colors = d3.scaleLinear()
                     .domain(d3.range(min_temp,max_temp, parseInt(Math.abs(max_temp-min_temp)/6.5)))
-                    .range(["#0d1a50", "#3e5eba", "#2b83ba", "#abdda4", "#ffffbf", "#fdae61", "#d7191c", "#ffffff"])
+                    .range(["#0d1a50", "#3e5eba", "#2b83ba", "#abdda4", "#ffffbf", "#fdae61", "#d7191c"])
                     //.interpolator(d3.interpolateRdBu);                
 
                 ///////////////////////////////////////////////////////////
@@ -151,19 +151,28 @@
 
                 svg.append("g")
                 .attr("class", "brush")
-                .call(brush); 
+                .call(brush);
+               // .on("dblclick", dblclicked);
                    
             }
 
 
-            function brushed() {
+  
 
-            const selection = d3.event.selection;
+            function brushed(selection) {
 
-            console.log(selection);
-             if (selection) {                
-                const [x0, x1] = selection.map(xScale.invert);
+             //const selection = event.selection;
+
+             if (selection===null) {      
+                console.log(selection)
+             }
+             else {          
+                const xRange = [0, 3000];
+                const [x0, x1] = selection.map(x.invert);
                 // Filter data based on the brush selection
+
+                console.log(x0)
+                console.log(x1)
                 const filteredData = data.map(row => row.filter((d, i) => xScale(i) >= x0 && xScale(i) <= x1));
                 // Recalculate contours and update paths
                 const updatedContours = d3.contours()
